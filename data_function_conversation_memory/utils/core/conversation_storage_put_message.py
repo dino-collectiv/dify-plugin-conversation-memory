@@ -56,7 +56,7 @@ def conversation_storage_put_message(
         INSERT INTO Conversation (conversation_id, sequence, status, created_at)
         VALUES (?, ?, ?, ?);
         """
-        conv_values = f'["{conversation.conversation_id}", "{conversation.sequence}", "{conversation.status}", "{conversation.created_at.isoformat()}"]'
+        conv_values = f'[{json.dumps(conversation.conversation_id)}, {json.dumps(conversation.sequence)}, {json.dumps(conversation.status)}, {json.dumps(conversation.created_at.isoformat())}]'
         cloudflare_d1_query(
             account_id=account_id,
             database_id=database_id,
@@ -82,7 +82,7 @@ def conversation_storage_put_message(
     INSERT INTO Message (message_id, conversation_id, role, text, parent_message_id, timestamp, metadata)
     VALUES (?, ?, ?, ?, ?, ?, ?);
     """
-    message_values = f'["{message.message_id}", "{message.conversation_id}", "{message.role}", "{message.text}", {json.dumps(message.parent_message_id)}, "{message.timestamp.isoformat()}", {json.dumps(json.dumps(message.metadata) if message.metadata else None)}]'
+    message_values = f'[{json.dumps(message.message_id)}, {json.dumps(message.conversation_id)}, {json.dumps(message.role)}, {json.dumps(message.text)}, {json.dumps(message.parent_message_id)}, {json.dumps(message.timestamp.isoformat())}, {json.dumps(json.dumps(message.metadata) if message.metadata else None)}]'
     cloudflare_d1_query(
         account_id=account_id,
         database_id=database_id,
@@ -96,7 +96,7 @@ def conversation_storage_put_message(
     SET latest_message_id = ?
     WHERE conversation_id = ?;
     """
-    conversation_values = f'["{message.message_id}", "{message.conversation_id}"]'
+    conversation_values = f'[{json.dumps(message.message_id)}, {json.dumps(message.conversation_id)}]'
     cloudflare_d1_query(
         account_id=account_id,
         database_id=database_id,
